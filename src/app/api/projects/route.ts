@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ProjectFormData } from "@/types";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
-// GET /api/projects - List all projects
+// GET /api/projects - List the authenticated user's projects
 export async function GET() {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const projects = await prisma.project.findMany({
+      where: { userId },
       orderBy: { updatedAt: "desc" },
       include: {
         _count: {
@@ -23,9 +29,13 @@ export async function GET() {
   }
 }
 
-// POST /api/projects - Create a new project
+// POST /api/projects - Create a new project for the authenticated user
 export async function POST(request: NextRequest) {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const body: ProjectFormData = await request.json();
 
     const {
@@ -55,6 +65,7 @@ export async function POST(request: NextRequest) {
 
     const project = await prisma.project.create({
       data: {
+        userId,
         name,
         clientName,
         githubOwner,

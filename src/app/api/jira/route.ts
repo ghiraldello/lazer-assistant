@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchInProgressTickets } from "@/lib/jira";
 import { getUserCredentials } from "@/lib/profile";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
 /**
  * Sanitize Jira domain - strips https:// prefix and trailing slashes.
@@ -11,7 +12,11 @@ function sanitizeDomain(raw: string): string {
 
 export async function GET(request: NextRequest) {
   try {
-    const creds = await getUserCredentials();
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
+    const creds = await getUserCredentials(userId);
 
     if (!creds.jiraEmail || !creds.jiraApiToken) {
       return NextResponse.json(

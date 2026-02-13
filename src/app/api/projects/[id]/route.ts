@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ProjectFormData } from "@/types";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
-// GET /api/projects/[id] - Get a single project
+// GET /api/projects/[id] - Get a single project (must belong to user)
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const { id } = await params;
     const project = await prisma.project.findUnique({
       where: { id },
@@ -19,7 +24,7 @@ export async function GET(
       },
     });
 
-    if (!project) {
+    if (!project || project.userId !== userId) {
       return NextResponse.json(
         { error: "Project not found" },
         { status: 404 }
@@ -34,13 +39,27 @@ export async function GET(
   }
 }
 
-// PUT /api/projects/[id] - Update a project
+// PUT /api/projects/[id] - Update a project (must belong to user)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const { id } = await params;
+
+    // Verify ownership
+    const existing = await prisma.project.findUnique({ where: { id } });
+    if (!existing || existing.userId !== userId) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
     const body: Partial<ProjectFormData> = await request.json();
 
     const project = await prisma.project.update({
@@ -71,13 +90,27 @@ export async function PUT(
   }
 }
 
-// DELETE /api/projects/[id] - Delete a project
+// DELETE /api/projects/[id] - Delete a project (must belong to user)
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const { id } = await params;
+
+    // Verify ownership
+    const existing = await prisma.project.findUnique({ where: { id } });
+    if (!existing || existing.userId !== userId) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
     await prisma.project.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserCredentials } from "@/lib/profile";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
 const GITHUB_API_BASE = "https://api.github.com";
 
@@ -14,7 +15,11 @@ export interface ContributionDay {
  */
 export async function GET(request: NextRequest) {
   try {
-    const creds = await getUserCredentials();
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
+    const creds = await getUserCredentials(userId);
 
     if (!creds.githubToken) {
       return NextResponse.json(

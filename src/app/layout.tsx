@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
-import { AppHeader } from "@/components/app-header";
-import { MainContent } from "@/components/main-content";
+import { Providers } from "@/components/providers";
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "EOD Assistant",
+  title: "EOD Assistant | Lazer",
   description:
     "Automate your End of Day reports from GitHub commits and Jira tickets",
+  icons: {
+    icon: "/lazer/LAZER_ICON_COLOUR.svg",
+  },
 };
 
 // Inline script to prevent flash of wrong theme
@@ -35,14 +37,10 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="font-sans antialiased">
-        <Sidebar />
-        <MainContent>
-          <AppHeader />
-          <main className="flex-1">
-            <div className="mx-auto max-w-6xl px-6 py-6">{children}</div>
-          </main>
-        </MainContent>
-        <Toaster />
+        <Providers>
+          <AuthenticatedLayout>{children}</AuthenticatedLayout>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

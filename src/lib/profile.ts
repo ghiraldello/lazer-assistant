@@ -11,30 +11,23 @@ export interface UserCredentials {
 }
 
 /**
- * Get the current user profile from DB, falling back to env vars.
- * Since this is a single-user app, we always use the first (and only) profile.
+ * Get the user profile / credentials for a specific user.
+ * Each user has their own isolated profile — no env var fallbacks.
  */
-export async function getUserCredentials(): Promise<UserCredentials> {
-  const profile = await prisma.userProfile.findFirst({
-    orderBy: { createdAt: "asc" },
+export async function getUserCredentials(
+  userId: string
+): Promise<UserCredentials> {
+  const profile = await prisma.userProfile.findUnique({
+    where: { userId },
   });
 
   return {
-    githubToken: profile?.githubToken || process.env.GITHUB_TOKEN || null,
-    githubUsername: profile?.githubUsername || process.env.GITHUB_USERNAME || null,
-    jiraEmail: profile?.jiraEmail || process.env.JIRA_EMAIL || null,
-    jiraApiToken: profile?.jiraApiToken || process.env.JIRA_API_TOKEN || null,
-    llmApiKey: profile?.llmApiKey || process.env.LLM_API_KEY || null,
-    llmBaseUrl: profile?.llmBaseUrl || process.env.LLM_BASE_URL || null,
-    llmModel: profile?.llmModel || process.env.LLM_MODEL || null,
+    githubToken: profile?.githubToken || null,
+    githubUsername: profile?.githubUsername || null,
+    jiraEmail: profile?.jiraEmail || null,
+    jiraApiToken: profile?.jiraApiToken || null,
+    llmApiKey: profile?.llmApiKey || null,
+    llmBaseUrl: profile?.llmBaseUrl || null,
+    llmModel: profile?.llmModel || null,
   };
-}
-
-/**
- * Get the GitHub avatar URL for the current user.
- */
-export async function getGitHubAvatarUrl(): Promise<string | null> {
-  const creds = await getUserCredentials();
-  if (!creds.githubUsername) return null;
-  return `https://github.com/${creds.githubUsername}.png?size=80`;
 }

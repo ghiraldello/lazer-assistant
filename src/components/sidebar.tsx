@@ -99,14 +99,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      {!collapsed && (
-        <div className="border-t border-sidebar-border p-3">
-          <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
-            v0.1.0
-          </p>
-        </div>
-      )}
     </aside>
   );
 }

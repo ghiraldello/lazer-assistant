@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { postToSlack } from "@/lib/slack";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+
     const body = await request.json();
     const { webhookUrl, message } = body;
 
-    const url =
-      webhookUrl || process.env.SLACK_DEFAULT_WEBHOOK_URL;
-
-    if (!url) {
+    if (!webhookUrl) {
       return NextResponse.json(
-        {
-          error:
-            "webhookUrl is required (either in request body or SLACK_DEFAULT_WEBHOOK_URL env var)",
-        },
+        { error: "webhookUrl is required in request body" },
         { status: 400 }
       );
     }
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await postToSlack(url, message);
+    await postToSlack(webhookUrl, message);
 
     return NextResponse.json({ success: true });
   } catch (error) {

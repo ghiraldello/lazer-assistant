@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthUserId } from "@/lib/auth-helpers";
 
-// GET /api/reports - List reports (with optional projectId filter)
+// GET /api/reports - List reports for the authenticated user's projects
 export async function GET(request: NextRequest) {
   try {
+    const userIdOrError = await getAuthUserId();
+    if (userIdOrError instanceof NextResponse) return userIdOrError;
+    const userId = userIdOrError;
+
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
 
     const reports = await prisma.report.findMany({
-      where: projectId ? { projectId } : undefined,
+      where: {
+        project: { userId },
+        ...(projectId ? { projectId } : {}),
+      },
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {
