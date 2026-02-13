@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "EOD Assistant | Lazer",
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Providers>
           <AuthenticatedLayout>{children}</AuthenticatedLayout>
           <Toaster />
+          <Analytics />
         </Providers>
       </body>
     </html>

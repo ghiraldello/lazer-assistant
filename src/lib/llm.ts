@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { GitHubCommit, JiraTicket } from "@/types";
 import { buildEODPrompt } from "./prompts";
 
-const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_BASE_URL = "https://llm.lazertechnologies.com";
 const DEFAULT_MODEL = "anthropic/claude-sonnet-4-20250514";
 
 interface LLMCredentials {

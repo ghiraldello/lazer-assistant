@@ -14,6 +14,16 @@ Automate your End of Day (EOD) reports by pulling data from **GitHub** and **Jir
 - **Slack Integration** — Copy to clipboard or post directly via webhook
 - **Report History** — Browse and re-use previously generated reports
 
+## Architecture
+
+```mermaid
+flowchart LR
+    GitHub["GitHub\nCommits & Login"] <--> App["EOD Assistant"]
+    Jira["Jira\nIn-Progress Tickets"] <--> App
+    App <--> LLM["LLM\nLazer Proxy / OpenRouter"]
+    App <--> DB["Turso DB\nSQLite"]
+```
+
 ## Tech Stack
 
 - **Next.js 16** (App Router, TypeScript)

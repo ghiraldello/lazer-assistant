@@ -18,6 +18,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate that the URL is a legitimate Slack webhook
+    const isValidSlackUrl =
+      /^https:\/\/hooks\.slack\.com\/services\//.test(webhookUrl);
+    if (!isValidSlackUrl) {
+      return NextResponse.json(
+        { error: "Invalid Slack webhook URL. Must start with https://hooks.slack.com/services/" },
+        { status: 400 }
+      );
+    }
+
     if (!message) {
       return NextResponse.json(
         { error: "message is required" },

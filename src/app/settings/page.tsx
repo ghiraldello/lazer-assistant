@@ -388,7 +388,7 @@ export default function SettingsPage() {
               </Label>
               <Input
                 id="llm-base-url"
-                placeholder="https://llm.company.com or leave empty"
+                placeholder="https://llm.lazertechnologies.com"
                 value={llmBaseUrl}
                 onChange={(e) => setLlmBaseUrl(e.target.value)}
                 className="mt-1"
@@ -410,7 +410,15 @@ export default function SettingsPage() {
           </div>
           <p className="text-[11px] text-zinc-400">
             Compatible with OpenAI API format. Supports LiteLLM proxy,
-            OpenRouter, or direct OpenAI.
+            OpenRouter, or direct OpenAI. Get your API key at{" "}
+            <a
+              href="https://focus.lazertechnologies.com/settings"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-zinc-600 dark:hover:text-zinc-300"
+            >
+              Lazer Focus &rarr; Add API Key
+            </a>
           </p>
         </CardContent>
       </Card>

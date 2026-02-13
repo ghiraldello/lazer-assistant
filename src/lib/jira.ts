@@ -59,14 +59,22 @@ export async function fetchInProgressTickets(
   return tickets;
 }
 
+/**
+ * Sanitize a value for safe JQL interpolation.
+ * Escapes double quotes and backslashes to prevent JQL injection.
+ */
+function sanitizeJQL(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 function buildJQL(projectKey: string, assigneeEmail?: string): string {
   const conditions = [
-    `project = "${projectKey}"`,
+    `project = "${sanitizeJQL(projectKey)}"`,
     `status = "In Progress"`,
   ];
 
   if (assigneeEmail) {
-    conditions.push(`assignee = "${assigneeEmail}"`);
+    conditions.push(`assignee = "${sanitizeJQL(assigneeEmail)}"`);
   }
 
   return conditions.join(" AND ") + " ORDER BY updated DESC";

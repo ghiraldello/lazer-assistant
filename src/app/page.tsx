@@ -13,6 +13,7 @@ import {
   Check,
   Send,
   MessageSquare,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -336,6 +337,19 @@ export default function DashboardPage() {
                   </PopoverContent>
                 </Popover>
               </div>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={fetchData}
+                disabled={loadingCommits || loadingTickets || !selectedProject}
+                title="Refresh commits and tickets"
+                className="h-9 w-9"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${loadingCommits || loadingTickets ? "animate-spin" : ""}`}
+                />
+              </Button>
             </div>
 
             {/* Right: heatmap */}

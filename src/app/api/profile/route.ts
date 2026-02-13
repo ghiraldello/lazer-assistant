@@ -16,7 +16,6 @@ export async function GET() {
     });
 
     if (!profile) {
-      // Auto-create an empty profile for the user
       profile = await prisma.userProfile.create({
         data: { userId },
       });
